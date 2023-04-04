@@ -313,7 +313,8 @@ $(document).ready(function () {
             url: "setsession.php",
             data: {
                 message: prompt,
-                context: (!($("#keep").length) || ($("#keep").prop("checked"))) ? JSON.stringify(contextarray) : '[]',
+                //context: (!($("#keep").length) || ($("#keep").prop("checked"))) ? JSON.stringify(contextarray) : '[]',
+                count: contextarray.count,
                 key: ($("#key").length) ? ($("#key").val()) : '',
             },
             dataType: "json",
