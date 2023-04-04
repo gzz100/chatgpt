@@ -1,7 +1,8 @@
 <?php
+session_start();
 //$context = json_decode($_POST['context'] ?: "[]") ?: [];
 $histroyMessageCount = intval(($_POST['count'] ?: "0"));
-if($histroyMessageCount == "0" || !isset($_SESSION['data']) || empty($_SESSION['data']))
+if($histroyMessageCount == 0 || !isset($_SESSION['data']) || empty($_SESSION['data']))
 {
 $postData = [
     "model" => "gpt-3.5-turbo",
@@ -10,7 +11,7 @@ $postData = [
     "messages" => [],
 ];
 }else{
-	$postData = json_decode($_SESSION['data']);
+	$postData = json_decode($_SESSION['data'],true);
 }
 $realCount = count($postData['messages']);
 if($realCount > $histroyMessageCount)
@@ -29,7 +30,7 @@ if (!empty($context)) {
 */
 $postData['messages'][] = ['role' => 'user', 'content' => $_POST['message']];
 $postData = json_encode($postData);
-session_start();
+
 $_SESSION['data'] = $postData;
 if ((isset($_POST['key'])) && (!empty($_POST['key']))) {
     $_SESSION['key'] = $_POST['key'];

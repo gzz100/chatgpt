@@ -314,7 +314,7 @@ $(document).ready(function () {
             data: {
                 message: prompt,
                 //context: (!($("#keep").length) || ($("#keep").prop("checked"))) ? JSON.stringify(contextarray) : '[]',
-                count: contextarray.length,
+                count: (contextarray.length * 2),
                 key: ($("#key").length) ? ($("#key").val()) : '',
             },
             dataType: "json",
