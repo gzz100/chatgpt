@@ -3,7 +3,7 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: text/event-stream");
 header("X-Accel-Buffering: no");
 session_start();
-$postData = $_SESSION['data'];
+$postData = json_encode($_SESSION['data']);
 $_SESSION['response'] = "";
 $ch = curl_init();
 $OPENAI_API_KEY = "sk-replace_with_your_api_key_dude";
@@ -70,10 +70,10 @@ foreach ($responsearr as $msg) {
         $answer .= $contentarr['choices'][0]['delta']['content'];
     }
 }
-
-$questionarr = json_decode($_SESSION['data'], true);
+$answer = trim($answer)
 $filecontent = $_SERVER["REMOTE_ADDR"] . " | " . date("Y-m-d H:i:s") . "\n";
-$filecontent .= "Q:" . end($questionarr['messages'])['content'] .  "\nA:" . trim($answer) . "\n----------------\n";
+$filecontent .= "Q:" . end($_SESSION['data']['messages'])['content'] .  "\nA:" . $answer . "\n----------------\n";
+$_SESSION['data']['messages'][] = ['role' => 'assistant', 'content' => $answer];
 $myfile = fopen(__DIR__ . "/chat.txt", "a") or die("Writing file failed.");
 fwrite($myfile, $filecontent);
 fclose($myfile);
