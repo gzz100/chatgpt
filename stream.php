@@ -70,7 +70,7 @@ foreach ($responsearr as $msg) {
         $answer .= $contentarr['choices'][0]['delta']['content'];
     }
 }
-$answer = trim($answer)
+$answer = trim($answer);
 $filecontent = $_SERVER["REMOTE_ADDR"] . " | " . date("Y-m-d H:i:s") . "\n";
 $filecontent .= "Q:" . end($_SESSION['data']['messages'])['content'] .  "\nA:" . $answer . "\n----------------\n";
 $_SESSION['data']['messages'][] = ['role' => 'assistant', 'content' => $answer];
