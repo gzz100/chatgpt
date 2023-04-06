@@ -170,29 +170,36 @@ $(document).ready(function () {
             url: "viewsession.php",
             dataType: "json",
             success: function (results) {
-                for(var i =0;i<results.messages.length;i+=2)
-                {
-                    if(results.messages[i].role == 'user')
+                if(results != undefined)
+                    for(var i =0;i<results.messages.length;i+=2)
                     {
-                        answer = randomString(16);
-                        $("#article-wrapper").append('<li class="article-title" id="q' + answer + '"><pre></pre></li>');
-                        $("#q" + answer).children('pre').text(results.messages[i].content);
-                        $("#article-wrapper").append('<li class="article-content" id="' + answer + '"></li>');
-                        let newalltext = results.messages[i+1].content;
-                        //有时服务器错误地返回\\n作为换行符，尤其是包含上下文的提问时，这行代码可以处理一下。
-                        if (newalltext.split("\n\n").length == newalltext.split("\n").length) {
-                            newalltext = newalltext.replace(/\\n/g, '\n');
+                        if(results.messages[i].role == 'user')
+                        {
+                            answer = randomString(16);
+                            $("#article-wrapper").append('<li class="article-title" id="q' + answer + '"><pre></pre></li>');
+                            $("#q" + answer).children('pre').text(results.messages[i].content);
+                            $("#article-wrapper").append('<li class="article-content" id="' + answer + '"></li>');
+                            let newalltext = results.messages[i+1].content;
+                            //有时服务器错误地返回\\n作为换行符，尤其是包含上下文的提问时，这行代码可以处理一下。
+                            if (newalltext.split("\n\n").length == newalltext.split("\n").length) {
+                                newalltext = newalltext.replace(/\\n/g, '\n');
+                            }
+                            if(newalltext.indexOf("```") != -1)
+                            {
+                                newalltext = mdHtml.render(newalltext);
+                            }else if(newalltext.indexOf("<") != -1 || newalltext.indexOf(">") != -1){
+                                newalltext = mdHtml.render("```\n" + newalltext);
+                            }
+                            
+                            $("#" + answer).html(newalltext);
+                            $("#" + answer + " pre code").each(function () {
+                                $(this).html("<button onclick='copycode(this);' class='codebutton'>复制</button>" + $(this).html());
+                            });
+                            document.getElementById("article-wrapper").scrollTop = 100000;
+                            contextarray.push([results.messages[i].content, results.messages[i+1].content]);
                         }
-                        newalltext = mdHtml.render(newalltext);
-                        $("#" + answer).html(newalltext);
-                        $("#" + answer + " pre code").each(function () {
-                            $(this).html("<button onclick='copycode(this);' class='codebutton'>复制</button>" + $(this).html());
-                        });
-                        document.getElementById("article-wrapper").scrollTop = 100000;
-                        contextarray.push([results.messages[i].content, results.messages[i+1].content]);
+                        
                     }
-                    
-                }
                 
             }
         });
@@ -333,9 +340,13 @@ $(document).ready(function () {
                 if (json.choices[0].delta.hasOwnProperty("content")) {
                     if (alltext == "") {
                         alltext = json.choices[0].delta.content.replace(/^\n+/, ''); //去掉回复消息中偶尔开头就存在的连续换行符
+                        if(alltext.indexOf("```") == -1 && (alltext.indexOf("<") != -1 || alltext.indexOf(">") != -1)){
+                            alltext = "```\n" + alltext;
+                        }
                     } else {
                         alltext += json.choices[0].delta.content;
                     }
+                    
                 }
             }
         }
