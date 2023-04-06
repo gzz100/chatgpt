@@ -1,5 +1,6 @@
 <?php
 session_start();
+if(!isset($_SESSION['user'])) exit;
 $histroyMessageCount = intval(($_POST['count'] ?: "0"));
 if($histroyMessageCount == 0 || !isset($_SESSION['data']) || empty($_SESSION['data']))
 {

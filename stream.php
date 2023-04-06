@@ -3,6 +3,7 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: text/event-stream");
 header("X-Accel-Buffering: no");
 session_start();
+if(!isset($_SESSION['user'])) exit;
 $postData = json_encode($_SESSION['data']);
 $_SESSION['response'] = "";
 $ch = curl_init();

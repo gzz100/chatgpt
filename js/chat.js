@@ -120,6 +120,7 @@ function autoresize() {
 $(document).ready(function () {
     initcode();
     autoresize();
+    loadSessionLog();
     $("#kw-target").on('keydown', function (event) {
         if (event.keyCode == 13 && event.ctrlKey) {
             send_post();
@@ -161,6 +162,41 @@ $(document).ready(function () {
         layer.open({ type: 1, title: '全部对话日志', area: ['80%', '80%'], shade: 0.5, scrollbar: true, offset: [($(window).height() * 0.1), ($(window).width() * 0.1)], content: '<iframe src="chat.txt?' + new Date().getTime() + '" style="width: 100%; height: 100%;"></iframe>', btn: btnArry });
         return false;
     });
+
+    function loadSessionLog(json) {
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "viewsession.php",
+            dataType: "json",
+            success: function (results) {
+                for(var i =0;i<results.messages.length;i+=2)
+                {
+                    if(results.messages[i].role == 'user')
+                    {
+                        answer = randomString(16);
+                        $("#article-wrapper").append('<li class="article-title" id="q' + answer + '"><pre></pre></li>');
+                        $("#q" + answer).children('pre').text(results.messages[i].content);
+                        $("#article-wrapper").append('<li class="article-content" id="' + answer + '"></li>');
+                        let newalltext = results.messages[i+1].content;
+                        //有时服务器错误地返回\\n作为换行符，尤其是包含上下文的提问时，这行代码可以处理一下。
+                        if (newalltext.split("\n\n").length == newalltext.split("\n").length) {
+                            newalltext = newalltext.replace(/\\n/g, '\n');
+                        }
+                        newalltext = mdHtml.render(newalltext);
+                        $("#" + answer).html(newalltext);
+                        $("#" + answer + " pre code").each(function () {
+                            $(this).html("<button onclick='copycode(this);' class='codebutton'>复制</button>" + $(this).html());
+                        });
+                        document.getElementById("article-wrapper").scrollTop = 100000;
+                        contextarray.push([results.messages[i].content, results.messages[i+1].content]);
+                    }
+                    
+                }
+                
+            }
+        });
+    }
 
     function send_post() {
         if (($('#key').length) && ($('#key').val().length != 51)) {
@@ -235,9 +271,7 @@ $(document).ready(function () {
                     isstarted = false;
                     answer = randomString(16);
                     $("#article-wrapper").append('<li class="article-title" id="q' + answer + '"><pre></pre></li>');
-                    for (var j = 0; j < prompt.length; j++) {
-                        $("#q" + answer).children('pre').text($("#q" + answer).children('pre').text() + prompt[j]);
-                    }
+                    $("#q" + answer).children('pre').text(prompt);
                     $("#article-wrapper").append('<li class="article-content" id="' + answer + '"></li>');
                     let str_ = '';
                     let i = 0;

@@ -1,34 +1,66 @@
 ﻿<?php
-$type = "个人";
-//  if (substr($_SERVER["REMOTE_ADDR"],0,9)!="127.0.0.1"){
-//    if (strpos($_SERVER["HTTP_USER_AGENT"],"MicroMessenger")){
-//      echo "<div style='height:100%;width:100%;text-align:center;margin-top:30%;'><h1>请点击右上角，选择”在浏览器打开“</h1></div>";
-//      exit;
-//    }
-//    if (!isset($_SERVER['PHP_AUTH_USER'])) {
-//      header('WWW-Authenticate: Basic realm="Please input username and password."');
-//      header('HTTP/1.0 401 Unauthorized');
-//      echo 'Bye, honey.';
-//      exit;
-//    } else {
-//      if (($_SERVER['PHP_AUTH_USER']=="admin")&&($_SERVER['PHP_AUTH_PW']=="admin")){
-//        $type = "外网";
-//      } else {
-//        echo 'Wrong password, bye...';
-//        exit;
-//      }
-//    }
-//  } else {
-//    $type = "内网";
-//  }
+$loginError = "";
+$un="";
+session_start();
+//$_SESSION['user']="admin";
+if(!isset($_SESSION['user']))
+{
+    if(isset($_POST['username']) && isset($_POST['password']))
+    {
+        $un=$_POST['username'];
+        $fp = __DIR__ . "/../../user.json";
+        $myfile = fopen($fp, "r");
+        $contents = fread($myfile,filesize($fp));
+        fclose($myfile);
+        $users = json_decode($contents, true);
+        foreach ($users['users'] as $user) {
+            if($_POST['username'] == $user['username'] && $_POST['password'] == $user['password'])
+            {
+                $_SESSION['user'] = $_POST['username'];
+                break;
+            }
+        }
+        if(!isset($_SESSION['user']))
+        {
+            $loginError = "用户名或密码错误！";
+        }
+    }
+}
+if(!isset($_SESSION['user']))
+{
 ?>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录界面</title>
+	<link rel="stylesheet" href="css/login.css">
+  </head>
+  <body>
+    <h1>登录</h1>
+    <form method="POST">
+      <label for="username">用户名:</label>
+      <input type="text" name="username" required value="<?php echo $un;?>">
+      <label for="password">密码:</label>
+      <input type="password" name="password" required>
+      <input type="submit" value="登录">
+	  <div class="error-message"><?php echo $loginError;?></div>
+    </form>
+  </body>
+</html>
+
+<?php
+    exit;
+}
+?>
+
 <html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <title>ChatGPT<?= $type ?>专用版</title>
+    <title>AI</title>
     <link rel="stylesheet" href="css/common.css?v1.1">
     <link rel="stylesheet" href="css/wenda.css?v1.1">
     <link rel="stylesheet" href="css/hightlight.css">
