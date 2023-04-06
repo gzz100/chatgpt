@@ -1,6 +1,7 @@
 ﻿<?php
 $loginError = "";
 $un="";
+ini_set('session.cookie_lifetime', 3600*24*7);
 session_start();
 //$_SESSION['user']="admin";
 if(!isset($_SESSION['user']))
