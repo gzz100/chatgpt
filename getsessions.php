@@ -13,9 +13,9 @@ $total = $result->fetchArray()['total'];
 
 // 查询商品列表
 if ($limit > 0) {
-    $sql = "SELECT id,title FROM user_session WHERE user_id = " . $_SESSION['user']['id'] . " ORDER BY created_at DESC LIMIT :p1, :p2";
+    $sql = "SELECT id,title FROM user_session WHERE user_id = " . $_SESSION['user']['id'] . " ORDER BY update_time DESC LIMIT :p1, :p2";
 } else {
-    $sql = "SELECT id,title FROM user_session WHERE user_id = " . $_SESSION['user']['id'] . " ORDER BY created_at DESC";
+    $sql = "SELECT id,title FROM user_session WHERE user_id = " . $_SESSION['user']['id'] . " ORDER BY update_time DESC";
 }
 $result = executeSQL($conn, $sql, $page,$limit);
 $sessions = array();

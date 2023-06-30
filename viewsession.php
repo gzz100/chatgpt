@@ -17,7 +17,7 @@ else
 $session = array();
 if(empty($_POST['session_id']))
 {
-    $sql = "SELECT * FROM user_session WHERE user_id=" . $_SESSION['user']['id'] . " ORDER BY id DESC LIMIT 0, 1 " ;
+    $sql = "SELECT * FROM user_session WHERE user_id=" . $_SESSION['user']['id'] . " ORDER BY update_time DESC LIMIT 0, 1 " ;
     $result = executeSQL($conn,$sql);
     $session = $result->fetchArray(SQLITE3_ASSOC);
 }else{

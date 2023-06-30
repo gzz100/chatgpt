@@ -86,6 +86,8 @@ $answer = trim($answer);
 
 $sql = "INSERT INTO chat_content('user_content','ai_content','model','temperature','session_id') VALUES (:p1,:p2,:p3,:p4," . $_SESSION['currect_session_id'] . ")";
 executeSQL($conn,$sql,end($_SESSION['data']['messages'])['content'],$answer,$_SESSION['data']['model'],$_SESSION['data']['temperature']);
+$sql = "UPDATE user_session SET update_time = datetime('now') WHERE id = " . $_SESSION['currect_session_id'];
+executeSQL($conn,$sql);
 
 
 $_SESSION['data']['messages'][] = ['role' => 'assistant', 'content' => $answer];
