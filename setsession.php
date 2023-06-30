@@ -1,16 +1,24 @@
 <?php
 session_start();
-if(!isset($_SESSION['user'])) exit;
-$histroyMessageCount = intval(($_POST['count'] ?: "0"));
+if(!isset($_SESSION['user']) || empty($_POST['message']) || empty($_SESSION['currect_session_id'])) exit;
+$histroyMessageCount = (!empty($_POST['count'])) ? intval($_POST['count']) : 0;
+$model = (!empty($_POST['model'])) ? $_POST['model'] : 'gpt-3.5-turbo';
+$temperature = (!empty($_POST['temperature'])) ? intval($_POST['temperature']) : 0;
+if($temperature<0) $temperature = 0;
+if($temperature>2) $temperature = 2;
 if($histroyMessageCount == 0 || !isset($_SESSION['data']) || empty($_SESSION['data']))
 {
-$_SESSION['data'] = [
-    "model" => "gpt-3.5-turbo",
-    "temperature" => 1,
-    "stream" => true,
-    "messages" => [],
-];
+    $_SESSION['data'] = [
+        "model" => $model,
+        "temperature" => $temperature,
+        "stream" => true,
+        "messages" => [],
+    ];
+
 }
+$_SESSION['data']['stream'] = true;
+$_SESSION['data']['model'] = $model;
+$_SESSION['data']['temperature'] = $temperature;
 $realCount = count($_SESSION['data']['messages']);
 if($realCount > $histroyMessageCount)
 {

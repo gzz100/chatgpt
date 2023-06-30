@@ -120,7 +120,7 @@ function autoresize() {
 $(document).ready(function () {
     initcode();
     autoresize();
-    loadSessionLog();
+    loadSessionLog(null,loadSessionList);
     $("#kw-target").on('keydown', function (event) {
         if (event.keyCode == 13 && event.ctrlKey) {
             send_post();
@@ -151,9 +151,20 @@ $(document).ready(function () {
     });
 
     $("#clean").click(function () {
-        $("#article-wrapper").html("");
-        contextarray = [];
-        layer.msg("清理完毕！");
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "viewsession.php",
+            data: {
+                session_id:-1
+            },
+            dataType: "json",
+            success: function (results) {
+                $("#article-wrapper").html("");
+                contextarray = [];
+                loadSessionList();
+            }
+        });
         return false;
     });
 
@@ -162,13 +173,44 @@ $(document).ready(function () {
         layer.open({ type: 1, title: '全部对话日志', area: ['80%', '80%'], shade: 0.5, scrollbar: true, offset: [($(window).height() * 0.1), ($(window).width() * 0.1)], content: '<iframe src="chat.txt?' + new Date().getTime() + '" style="width: 100%; height: 100%;"></iframe>', btn: btnArry });
         return false;
     });
+    $("#session_id").change(function() {
+        var selectedValue = $(this).val();
+        $("#article-wrapper").html("");
+        contextarray = [];
+        loadSessionLog(selectedValue);
 
-    function loadSessionLog(json) {
+      });
+
+    function loadSessionList() {
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "getsessions.php",
+            dataType: "json",
+            success: function (results) {
+                $('#session_id').empty();
+                if(results != undefined)
+                    for(var i =0;i<results.data.length;i++)
+                    {
+                        $('#session_id').append($('<option>', {
+                            value: results.data[i].id,
+                            text: results.data[i].id
+                          }))
+                    }
+                    $('#session_id').find('option:first').prop('selected', true);
+            }
+        });
+    }
+    function loadSessionLog(id,callback) {
+        
         $.ajax({
             cache: true,
             type: "POST",
             url: "viewsession.php",
             dataType: "json",
+            data:{
+                session_id:id
+            },
             success: function (results) {
                 if(results != undefined)
                     for(var i =0;i<results.messages.length;i+=2)
@@ -198,9 +240,9 @@ $(document).ready(function () {
                             document.getElementById("article-wrapper").scrollTop = 100000;
                             contextarray.push([results.messages[i].content, results.messages[i+1].content]);
                         }
-                        
                     }
-                
+                    
+                    if(callback && typeof callback === 'function') callback();
             }
         });
     }
@@ -212,6 +254,8 @@ $(document).ready(function () {
         }
 
         var prompt = $("#kw-target").val();
+        var model = $("#model").val();
+        var temperature = $("#temperature").val();
 
         if (prompt == "") {
             layer.msg("请输入您的问题", { icon: 5 });
@@ -360,6 +404,8 @@ $(document).ready(function () {
                 message: prompt,
                 //context: (!($("#keep").length) || ($("#keep").prop("checked"))) ? JSON.stringify(contextarray) : '[]',
                 count: (contextarray.length * 2),
+                model: model,
+                temperature: temperature,
                 key: ($("#key").length) ? ($("#key").val()) : '',
             },
             dataType: "json",

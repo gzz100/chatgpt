@@ -1,4 +1,6 @@
 ﻿<?php
+// 连接数据库
+require_once('sql.php');
 $loginError = "";
 $un="";
 ini_set('session.cookie_lifetime', 3600*24*7);
@@ -8,23 +10,24 @@ if(!isset($_SESSION['user']))
 {
     if(isset($_POST['username']) && isset($_POST['password']))
     {
-        $un=$_POST['username'];
-        $fp = __DIR__ . "/../../user.json";
-        $myfile = fopen($fp, "r");
-        $contents = fread($myfile,filesize($fp));
-        fclose($myfile);
-        $users = json_decode($contents, true);
-        foreach ($users['users'] as $user) {
-            if($_POST['username'] == $user['username'] && $_POST['password'] == $user['password'])
-            {
-                $_SESSION['user'] = $_POST['username'];
-                break;
-            }
+        // 获取POST请求的数据
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+
+        // 查询用户数据
+        $sql = "SELECT * FROM users WHERE username=:p1 AND password=:p2";
+        $result = executeSQL($conn,$sql, $username, $password);
+        $user = $result->fetchArray(SQLITE3_ASSOC);
+        // 校验用户数据
+        if ($user) {
+            // 用户名密码正确，保存用户信息到session中
+            $_SESSION['user'] = $user;
+            
+        } else {
+            // 用户名密码错误，返回错误的消息
+            $loginError = "用户名或密码错误";
         }
-        if(!isset($_SESSION['user']))
-        {
-            $loginError = "用户名或密码错误！";
-        }
+        $conn->close();
     }
 }
 if(!isset($_SESSION['user']))
@@ -72,7 +75,7 @@ if(!isset($_SESSION['user']))
         <header class="layout-header">
             <div class="container" data-flex="main:justify cross:start">
                 <div class="header-logo">
-                    <h2 class="logo"><a class="links" id="clean" title="清空对话信息"><span class="logo-title">清空对话信息</span></a></h2>
+                    <h2 class="logo"><a class="links" id="clean" title="新建对话"><span class="logo-title">新建对话</span></a></h2>
                 </div>
             </div>
         </header>
@@ -93,6 +96,23 @@ if(!isset($_SESSION['user']))
                                 <label for="keep"></label>
                             </div>
 							-->
+                            
+                            <div class="input-group">
+                                <span style="text-align: center;color:#9ca2a8">&nbsp;&nbsp;历史对话：</span>
+                                <select id="session_id" style="width:calc(100% - 90px);max-width:180px;">
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <span style="text-align: center;color:#9ca2a8">&nbsp;&nbsp;模型：</span>
+                                <select id="model" style="width:calc(100% - 90px);max-width:180px;">
+                                    <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+                                    <option value="gpt-3.5-turbo">gpt-3.5-turbo-16k</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <span style="text-align: center;color:#9ca2a8">&nbsp;&nbsp;对话创意值：</span>
+                                <input type="text" id="temperature" style="border:1px solid grey;display:block;max-width:270px;width:calc(100% - 70px);" value="0">
+                            </div>
                             <div class="input-group">
                                 <span style="text-align: center;color:#9ca2a8">&nbsp;&nbsp;预设话术：</span>
                                 <select id="preset-text" onchange="insertPresetText()" style="width:calc(100% - 90px);max-width:280px;">

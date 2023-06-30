@@ -3,14 +3,23 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: text/event-stream");
 header("X-Accel-Buffering: no");
 session_start();
-if(!isset($_SESSION['user'])) exit;
+if(!isset($_SESSION['user']) || empty($_SESSION['currect_session_id'])) exit;
+require_once('sql.php');
 $postData = json_encode($_SESSION['data']);
 $_SESSION['response'] = "";
 $ch = curl_init();
-$OPENAI_API_KEY = "sk-replace_with_your_api_key_dude";
+
 if (isset($_SESSION['key'])) {
     $OPENAI_API_KEY = $_SESSION['key'];
+}else{
+    $sql = "SELECT * FROM setting WHERE key='OPENAI_API_KEY'";
+    $result = executeSQL($conn,$sql);
+    $row = $result->fetchArray(SQLITE3_ASSOC);
+    if ($row) {
+        $OPENAI_API_KEY = $row['value'];
+    }
 }
+
 $headers  = [
     'Accept: application/json',
     'Content-Type: application/json',
@@ -55,7 +64,7 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
 curl_setopt($ch, CURLOPT_WRITEFUNCTION, $callback);
-//curl_setopt($ch, CURLOPT_PROXY, "http://127.0.0.1:1081");
+//curl_setopt($ch, CURLOPT_PROXY, "http://127.0.0.1:10809");
 
 curl_exec($ch);
 
@@ -72,10 +81,19 @@ foreach ($responsearr as $msg) {
     }
 }
 $answer = trim($answer);
-$filecontent = $_SERVER["REMOTE_ADDR"] . " | " . date("Y-m-d H:i:s") . "\n";
-$filecontent .= "Q:" . end($_SESSION['data']['messages'])['content'] .  "\nA:" . $answer . "\n----------------\n";
+//$filecontent = $_SERVER["REMOTE_ADDR"] . " | " . date("Y-m-d H:i:s") . "\n";
+//$filecontent .= "Q:" . end($_SESSION['data']['messages'])['content'] .  "\nA:" . $answer . "\n----------------\n";
+
+$sql = "INSERT INTO chat_content('user_content','ai_content','model','temperature','session_id') VALUES (:p1,:p2,:p3,:p4," . $_SESSION['currect_session_id'] . ")";
+executeSQL($conn,$sql,end($_SESSION['data']['messages'])['content'],$answer,$_SESSION['data']['model'],$_SESSION['data']['temperature']);
+
+
 $_SESSION['data']['messages'][] = ['role' => 'assistant', 'content' => $answer];
-$myfile = fopen(__DIR__ . "/chat.txt", "a") or die("Writing file failed.");
-fwrite($myfile, $filecontent);
-fclose($myfile);
+
+
+
+//$myfile = fopen(__DIR__ . "/chat.txt", "a") or die("Writing file failed.");
+//fwrite($myfile, $filecontent);
+//fclose($myfile);
 curl_close($ch);
+$conn->close();
