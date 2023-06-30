@@ -16,7 +16,7 @@ CREATE TABLE user_session (
     user_id INTEGER NOT NULL
 );
 CREATE INDEX user_id_index ON user_session(user_id);
-CREATE INDEX created_at_index ON user_session(created_at);
+--CREATE INDEX created_at_index ON user_session(created_at);
 
 CREATE TABLE chat_content (
     id INTEGER  PRIMARY KEY   AUTOINCREMENT,
@@ -28,18 +28,8 @@ CREATE TABLE chat_content (
 	temperature REAL NOT NULL
 );
 CREATE INDEX session_id_index ON chat_content(session_id);
-CREATE INDEX created_at_index ON chat_content(created_at);
+--CREATE INDEX created_at_index ON chat_content(created_at);
 
-
-
-CREATE TABLE user_session (
-    id INTEGER  PRIMARY KEY   AUTOINCREMENT,
-	title TEXT,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    user_id INTEGER NOT NULL
-);
-CREATE INDEX user_id_index ON user_session(user_id);
-CREATE INDEX created_at_index ON user_session(created_at);
 
 CREATE TABLE setting (
     key CHAR(32) NOT NULL,
