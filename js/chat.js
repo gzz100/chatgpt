@@ -167,6 +167,18 @@ $(document).ready(function () {
         });
         return false;
     });
+    $("#logout").click(function () {
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "logout.php",
+            dataType: "json",
+            success: function (results) {
+                location.reload();
+            }
+        });
+        return false;
+    });
 
     $("#showlog").click(function () {
         let btnArry = ['已阅'];
@@ -194,7 +206,7 @@ $(document).ready(function () {
                     {
                         $('#session_id').append($('<option>', {
                             value: results.data[i].id,
-                            text: results.data[i].id
+                            text: "对话" + results.data[i].id
                           }))
                     }
                     $('#session_id').find('option:first').prop('selected', true);
