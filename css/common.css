@@ -869,6 +869,7 @@ body {
     -ms-flex-align: center;
     align-items: center;
     width: auto;
+    margin: 2px;
 }
 
 .input-group>.form-control,
