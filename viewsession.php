@@ -27,7 +27,7 @@ if(empty($_POST['session_id']))
 }
 
 
-// 校验用户数据
+// 存在对话
 if ($session) {
     $sql = "SELECT * FROM chat_content WHERE session_id=" . $session['id'] . " ORDER BY id ASC" ;
     $result = executeSQL($conn,$sql);
@@ -40,10 +40,20 @@ if ($session) {
     $_SESSION['currect_session_id']=$session['id'];
     $_SESSION['data']=$data;
     echo unicode2Chinese(json_encode($data));
-} else {
-    $sql = "INSERT INTO user_session('user_id') VALUES (" . $_SESSION['user']['id'] . ")";
-    executeSQL($conn,$sql);
-    $_SESSION['currect_session_id'] = $conn->lastInsertRowID();
+} else { //创建新对话
+    //先找找有没有空对话
+    $sql = "SELECT user_session.id FROM user_session LEFT JOIN chat_content ON user_session.id = chat_content.session_id WHERE chat_content.session_id IS NULL";
+    $result = executeSQL($conn,$sql);
+    $row = $result->fetchArray(SQLITE3_ASSOC);
+    if($row)
+    {
+        $_SESSION['currect_session_id'] = $row['id'];
+    }else{
+        //创建对话
+        $sql = "INSERT INTO user_session('user_id') VALUES (" . $_SESSION['user']['id'] . ")";
+        executeSQL($conn,$sql);
+        $_SESSION['currect_session_id'] = $conn->lastInsertRowID();
+    }
     echo "null";
 }
 $conn->close();
