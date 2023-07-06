@@ -64,7 +64,7 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
 curl_setopt($ch, CURLOPT_WRITEFUNCTION, $callback);
-//curl_setopt($ch, CURLOPT_PROXY, "http://127.0.0.1:10809");
+curl_setopt($ch, CURLOPT_PROXY, "http://127.0.0.1:10809");
 
 curl_exec($ch);
 

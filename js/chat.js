@@ -127,7 +127,15 @@ $(document).ready(function () {
             return false;
         }
     });
+    $('#toggle-button').click(function() {
+        $('.hidden-div').toggle();
+      });
 
+      $(document).click(function(event) {
+        if (!$(event.target).closest('.hidden-div').length && event.target.id !== 'toggle-button') {
+          $('.hidden-div').hide();
+        }
+      });
     $(window).resize(function () {
         autoresize();
     });
@@ -388,7 +396,8 @@ $(document).ready(function () {
                 if (event.data == "[DONE]") {
                     isalltext = true;
                     contextarray.push([prompt, alltext]);
-                    contextarray = contextarray.slice(-5); //只保留最近5次对话作为上下文，以免超过最大tokens限制
+                    var hisCount = parseInt($('#his_count').val());
+                    contextarray = contextarray.slice(-hisCount); //只保留最近5次对话作为上下文，以免超过最大tokens限制
                     es.close();
                     return;
                 }

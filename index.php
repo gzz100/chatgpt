@@ -1,6 +1,5 @@
 ﻿<?php
-// 连接数据库
-require_once('sql.php');
+
 $loginError = "";
 $un="";
 ini_set('session.cookie_lifetime', 3600*24*7);
@@ -8,6 +7,8 @@ session_start();
 //$_SESSION['user']="admin";
 if(!isset($_SESSION['user']))
 {
+    // 连接数据库
+    require_once('sql.php');
     if(isset($_POST['username']) && isset($_POST['password']))
     {
         // 获取POST请求的数据
@@ -78,7 +79,7 @@ if(!isset($_SESSION['user']))
                     <a class="links" id="clean" title="新建对话"><span class="logo-title">新建对话</span></a>
                 </h2>
                 <h2 class="logo">
-                    <a class="links" id="logout" title="退出登录"><span class="logo-title">退出登录</span></a>
+                    <a class="links"  title="菜单"><span class="logo-title" id="toggle-button">菜单</span></a>
                 </h2>
             </div>
         </header>
@@ -86,7 +87,7 @@ if(!isset($_SESSION['user']))
             <div class="container">
                 <article class="article" id="article">
                     <div class="article-box">
-                        <div class="precast-block" data-flex="main:left">
+                        <div class="hidden-div precast-block" data-flex="main:left">
                             <!--
                             <div class="input-group">
                                 <span style="text-align: center;color:#9ca2a8">&nbsp;&nbsp;API-KEY&nbsp;&nbsp;</span>
@@ -115,6 +116,10 @@ if(!isset($_SESSION['user']))
                             <div class="input-group">
                                 <span style="text-align: center;color:#9ca2a8">&nbsp;&nbsp;对话创意值：</span>
                                 <input type="text" id="temperature" style="border:1px solid grey;display:block;width:50px" value="0">
+                            </div>
+                            <div class="input-group">
+                                <span style="text-align: center;color:#9ca2a8">&nbsp;&nbsp;包含历史对话数：</span>
+                                <input type="text" id="his_count" style="border:1px solid grey;display:block;width:50px" value="5">
                             </div>
                             <div class="input-group">
                                 <span style="text-align: center;color:#9ca2a8">&nbsp;&nbsp;预设话术：</span>
@@ -233,6 +238,9 @@ if(!isset($_SESSION['user']))
                                     <option value="接下来我发送给你的句子，你应尽可能多地使用同义词替换其中的词语，例如避免改为规避，如果改为若是，每个句子必须保证13个字符不能相同，汉字算两个字符，英文单词算一个，不能仅通过删除、增加、修改一两个字符的方式，可以在无法替换的句子中间插入一些无意义又无影响的词语来规避，也可以在不影响其含义的情况下修改语序，可以使用缩写的方式，必须严格遵守这条规则，如果明白了的话请发一条示例吧">作为一个简单的去重工具</option>
 
                                 </select>
+                            </div>
+                            <div class="input-group">
+                                <button class="btn" style="text-align: center;" id="logout">退出登录</button>
                             </div>
                         </div>
                         <ul id="article-wrapper">

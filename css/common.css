@@ -869,7 +869,7 @@ body {
     -ms-flex-align: center;
     align-items: center;
     width: auto;
-    margin: 2px;
+    margin: 18px 2px;
 }
 
 .input-group>.form-control,
@@ -1287,7 +1287,24 @@ a.unlinks-deco {
     background: linear-gradient(90deg, var(--zhuluan-primary-color), var(--zhuluan-primary-color-hover));
     box-shadow: 0 4px 8px 0 var(--zhuluan-shadow-color);
 }
-
+.hidden-div {
+    display: none;
+    width: 300px;
+    height: 300px;
+    background-color: #434654;
+    position: absolute;
+    top: 150px;
+    right: -150px;
+    transform: translate(-50%, -50%);
+}
+.btn {
+    background-color: #1781EA;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 .precast-block {
     padding: 5px 12px;
     min-height: 50px;
