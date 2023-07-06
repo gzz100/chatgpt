@@ -259,6 +259,8 @@ $(document).ready(function () {
                             });
                             document.getElementById("article-wrapper").scrollTop = 100000;
                             contextarray.push([results.messages[i].content, results.messages[i+1].content]);
+                            var hisCount = parseInt($('#his_count').val());
+                            contextarray = contextarray.slice(-hisCount); //只保留最近5次对话作为上下文，以免超过最大tokens限制
                         }
                     }
                     
