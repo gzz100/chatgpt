@@ -26,7 +26,8 @@ CREATE TABLE chat_content (
     session_id INT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	model TEXT NOT NULL,
-	temperature REAL NOT NULL
+	temperature REAL NOT NULL,
+    history_count INT
 );
 CREATE INDEX session_id_index ON chat_content(session_id);
 --CREATE INDEX created_at_index ON chat_content(created_at);

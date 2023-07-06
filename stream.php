@@ -90,8 +90,8 @@ $answer = trim($answer);
 //$filecontent = $_SERVER["REMOTE_ADDR"] . " | " . date("Y-m-d H:i:s") . "\n";
 //$filecontent .= "Q:" . end($_SESSION['data']['messages'])['content'] .  "\nA:" . $answer . "\n----------------\n";
 
-$sql = "INSERT INTO chat_content('user_content','ai_content','model','temperature','session_id') VALUES (:p1,:p2,:p3,:p4," . $_SESSION['currect_session_id'] . ")";
-executeSQL($conn,$sql,end($_SESSION['data']['messages'])['content'],$answer,$_SESSION['data']['model'],$_SESSION['data']['temperature']);
+$sql = "INSERT INTO chat_content('user_content','ai_content','model','temperature','history_count','session_id') VALUES (:p1,:p2,:p3,:p4,:p5," . $_SESSION['currect_session_id'] . ")";
+executeSQL($conn,$sql,end($_SESSION['data']['messages'])['content'],$answer,$_SESSION['data']['model'],$_SESSION['data']['temperature'],count($_SESSION['data']['messages'])-1);
 $sql = "UPDATE user_session SET update_time = datetime('now') WHERE id = " . $_SESSION['currect_session_id'];
 executeSQL($conn,$sql);
 
