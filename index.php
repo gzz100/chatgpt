@@ -74,19 +74,17 @@ if(!isset($_SESSION['user']))
 <body>
     <div class="layout-wrap">
         <header class="layout-header">
-            <div class="container" data-flex="main:justify cross:start">
-                <h2 class="logo">
-                    <a class="links" id="clean" title="新建对话"><span class="logo-title">新建对话</span></a>
+                <h2 class="logo" style="margin-left:10px;">
+                    <a class="links"><span class="logo-title" id="clean">新建对话</span></a>
                 </h2>
-                <h2 class="logo">
-                    <a class="links"  title="菜单"><span class="logo-title" id="toggle-button">菜单</span></a>
+                <h2 class="logo" style="margin-left:auto;margin-right:10px;">
+                    <a class="links"><span class="logo-title" id="toggle-button">菜单</span></a>
                 </h2>
-            </div>
         </header>
         <div class="layout-content">
-            <div class="container">
+            <div>
                 <article class="article" id="article">
-                    <div class="article-box">
+                    <div>
                         <div class="hidden-div precast-block" data-flex="main:left">
                             <!--
                             <div class="input-group">

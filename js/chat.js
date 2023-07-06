@@ -114,7 +114,7 @@ function autoresize() {
     var rows = Math.ceil(height / 20);
     div.remove();
     textarea.attr('rows', rows);
-    $("#article-wrapper").height(parseInt($(window).height()) - parseInt($("#fixed-block").height()) - parseInt($(".layout-header").height()) - 80);
+    $("#article-wrapper").height(parseInt($(window).height()) - parseInt($("#fixed-block").height()) - parseInt($(".layout-header").height()) - 10);
 }
 
 $(document).ready(function () {

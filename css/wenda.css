@@ -22,10 +22,10 @@
 }
 
 #article-wrapper {
-    height: calc(100vh - 178px);
     overflow-y: auto;
+    /*height: calc(100vh - 178px);
     border: 1px solid;
-    border-radius: var(--zhuluan-primary-border-radius);
+    border-radius: var(--zhuluan-primary-border-radius);*/
 }
 
 #article-wrapper::-webkit-scrollbar {
@@ -47,7 +47,7 @@
 
 #fixed-block {
     background-color: #40414F;
-    bottom: 20px;
+    padding: 5px;
 }
 
 #kw-target-box {
