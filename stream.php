@@ -7,17 +7,36 @@ if(!isset($_SESSION['user']) || empty($_SESSION['currect_session_id'])) exit;
 require_once('sql.php');
 $postData = json_encode($_SESSION['data']);
 $_SESSION['response'] = "";
-$ch = curl_init();
+// 获取当前选择的模型
+$currentModel = isset($_SESSION['data']['model']) ? $_SESSION['data']['model'] : '';
 
-if (isset($_SESSION['key'])) {
-    $OPENAI_API_KEY = $_SESSION['key'];
-}else{
-    $sql = "SELECT * FROM setting WHERE key='OPENAI_API_KEY'";
-    $result = executeSQL($conn,$sql);
-    $row = $result->fetchArray(SQLITE3_ASSOC);
-    if ($row) {
-        $OPENAI_API_KEY = $row['value'];
+// 从数据库获取该模型的API配置
+$sql = "SELECT key, url FROM setting WHERE model = :model";
+$stmt = $conn->prepare($sql);
+$stmt->bindValue(':model', $currentModel, SQLITE3_TEXT);
+$result = $stmt->execute();
+$modelConfig = $result->fetchArray(SQLITE3_ASSOC);
+
+// 设置默认值
+$OPENAI_API_KEY = isset($_SESSION['key']) ? $_SESSION['key'] : '';
+$apiUrl = 'https://api.openai.com/v1/chat/completions'; // 默认URL
+
+// 如果数据库中有配置，则使用数据库中的配置
+if ($modelConfig) {
+    if (!empty($modelConfig['key'])) {
+        $OPENAI_API_KEY = $modelConfig['key'];
     }
+    if (!empty($modelConfig['url'])) {
+        $apiUrl = $modelConfig['url'];
+    }
+}
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $apiUrl);
+
+// 如果SESSION中有key且数据库中没有覆盖，则使用SESSION中的key
+if (isset($_SESSION['key']) && (empty($modelConfig) || empty($modelConfig['key']))) {
+    $OPENAI_API_KEY = $_SESSION['key'];
 }
 
 $headers  = [
@@ -58,7 +77,8 @@ $callback = function ($ch, $data) {
 
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-curl_setopt($ch, CURLOPT_URL, 'https://api.openai.com/v1/chat/completions');
+//curl_setopt($ch, CURLOPT_URL, 'https://api.openai.com/v1/chat/completions');
+//curl_setopt($ch, CURLOPT_URL, 'https://api.siliconflow.cn/v1/chat/completions');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 curl_setopt($ch, CURLOPT_POST, 1);

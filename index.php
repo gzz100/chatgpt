@@ -107,10 +107,17 @@ if(!isset($_SESSION['user']))
                             <div class="input-group">
                                 <span style="text-align: center;color:#9ca2a8">&nbsp;&nbsp;模型：</span>
                                 <select id="model" >
-                                    <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-                                    <option value="gpt-3.5-turbo-16k">gpt-3.5-turbo-16k</option>
-                                    <option value="gpt-4">gpt-4</option>
-                                    <option value="gpt-4-32k">gpt-4-32k</option>
+									<?php
+                                    // 连接数据库获取模型列表
+                                    require_once('sql.php');
+                                    $sql = "SELECT model, modelName FROM setting";
+                                    $result = $conn->query($sql);
+                                    
+                                    while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+                                        echo '<option value="' . htmlspecialchars($row['model']) . '">' . htmlspecialchars($row['modelName']) . '</option>';
+                                    }
+                                    $conn->close();
+                                    ?>
                                 </select>
                             </div>
                             <div class="input-group">
